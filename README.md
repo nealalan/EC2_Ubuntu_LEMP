@@ -1,4 +1,4 @@
-Ultimately the goals of this project are to have:
++Ultimately the goals of this project are to have:
  - a free, sustainable webserver, running in the cloud
  - secure, https only site,
  - allow multiple domains to be hosted
@@ -7,7 +7,7 @@ Ultimately the goals of this project are to have:
 	- use AWS CLI and/or terraform
  - limited access IAM user roles
 
-Steps
++Steps
  - use a free tier AWS account
  - register domain name via Route53 and create a new hosted zone
  - create a new VPC using AWS best practices
