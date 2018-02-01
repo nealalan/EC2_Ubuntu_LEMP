@@ -1,3 +1,5 @@
+## [nealalan.github.io](https://nealalan.github.io)/[EC2_Ubuntu_LEMP](https://nealalan.github.io/EC2_Ubuntu_LEMP)
+
 ## Ultimately the goals of this project are to have:
  - a free, sustainable webserver, running in the cloud
  - secure, https only site,
@@ -27,11 +29,11 @@
  - download certbot
 
  - configure nginx.conf files to registered domain
- 	- [nealalan/EC2_Ubuntu_LEMP/nginx.servers.conf.txt](./nginx.servers.conf.txt)
+ 	- nealalan/EC2_Ubuntu_LEMP/[nginx.servers.conf.txt](./nginx.servers.conf.txt)
  - create a link in your home folder to get to 
 
  - setup a bash script to automatically run upon instance load to update the DNS record to the correct public IP address
-	- [nealalan/update_route53](https://github.com/nealalan/update_route53)
+	- nealalan/[update_route53](https://github.com/nealalan/update_route53)
 	- This will allow you to ssh into your instance using the domain name instead of the newly assigned public IP address
 
 
