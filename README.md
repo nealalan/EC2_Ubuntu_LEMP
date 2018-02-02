@@ -56,10 +56,17 @@ What I won't go over:
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/nsrecords.png)
 - You now have your Start of Authority (SOA) and NameServer (NS) records. The NS records will be entered under the domain as the name servers to look for the DNS records.
 
-## IAM Access to for DNS Record Updates
-- 
-- lets create a way for us to update our DNS records for the domain name we will have in the future. This is done by creating "system account" and giving "programatic access" to only a few things.
-- Create a new IAM Policy [Policies: Create Policy] and in the [JSON] tab copy in the following code:
+## IAM Access for DNS Record Updates
+- In the future we will need to update our DNS records for the domain name. 
+	- Using a dynamic IP addresses costs extra money, 
+	- Using a static IP address and updating a DNS record is free. 
+- You will need the "Hosted Zone ID" from Route 53 for this step.
+
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/hostedzone.png)
+- Create a "system account" and give "programatic access" to only a few fuctions.
+	- Create a new IAM Policy [Policies: Create Policy] 
+	- In the [JSON] tab copy in the following code:
+
 ```JSON
 {
     "Version": "2012-10-17",
