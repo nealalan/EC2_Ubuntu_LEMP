@@ -106,8 +106,9 @@ What I won't go over:
 ## Virtual Private Cloud (VPC) Dashboard
  - A VPC is an isolated portion of the AWS cloud populated by AWS objects, such as Amazon EC2 instances. 
  - You can create an EC2 instance and it will automatically create your VPC, Subnets, Security Groups, etc. However you may miss things, run into issues and definitely won't understand how everything interacts.
+
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/cidrcalc.png)
- - Create a new VPC 
+- Create a new VPC 
  	- You can read here about using [AWS best practices](https://aws.amazon.com/answers/networking/aws-single-vpc-design/)
  	- Name tag: Neals Cloud
 	- [IPv4 CIDR block](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks): This must be in a [private network](https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces) range. 10.10.0.0/24 will give us enough address space to allow for a few public and private subnets if needed and plenty of IP address ranges.
