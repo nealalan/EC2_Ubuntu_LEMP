@@ -63,10 +63,10 @@ What I won't go over:
 - You will need the "Hosted Zone ID" from Route 53 for this step.
 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/hostedzone.png)
-- Create a "system account" and give "programatic access" to only a few fuctions.
-	- Create a new IAM Policy [Policies: Create Policy] 
-	- In the [JSON] tab copy in the following code:
-
+- We want to use IAM to create a "system account" and give "programatic access" to only a few fuctions.
+	- Create a new IAM Policy under Policies: Create Policy 
+	- Enter a name such as "AmazonRoute53UpdateDNS" and a Description.
+	- In the JSON tab, copy in the following code:
 ```JSON
 {
     "Version": "2012-10-17",
@@ -95,20 +95,36 @@ What I won't go over:
     ]
 }
 ```
+- Create a New Group called "UpdateRoute53" 
+	- Attach Policies "AmazonEC2ReadOnlyAccess" the new one you created "AmazonRoute53UpdateDNS"
+- Create a New User called "domain-name_update_dns" and check "Programatic Access"
+	- Add user to group "UpdateRoute53"
+	- Click Create User
+	- IMPORTANT! You will not be given an Access Key ID and Secret Access Key. You can NOT retrieve these later. I recommend you click download .csv file and you copy and paste these into a new entry in your password manager.
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/accesskey.png)
 
-
-
-## VPC
- - create a new VPC using [AWS best practices](https://aws.amazon.com/answers/networking/aws-single-vpc-design/)
-	- You will likely only need a handfull of IP addresses. 
-	- I prefer a Network such as 10.1.1.0/24, Netmask 255.255.255.0, Range 10.1.1.1-10.1.1.254
- - create a new Subnet in the VPC
+## Virtual Private Cloud (VPC) Dashboard
+ - A VPC is an isolated portion of the AWS cloud populated by AWS objects, such as Amazon EC2 instances. 
+ - You can create an EC2 instance and it will automatically create your VPC, Subnets, Security Groups, etc. However you may miss things, run into issues and definitely won't understand how everything interacts.
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/cidrcalc.png)
+ - Create a new VPC 
+ 	- You can read here about using [AWS best practices](https://aws.amazon.com/answers/networking/aws-single-vpc-design/)
+ 	- Name tag: Neals Cloud
+	- [IPv4 CIDR block](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks): This must be in a [private network](https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces) range. 10.10.0.0/24 will give us enough address space to allow for a few public and private subnets if needed and plenty of IP address ranges.
+	- A subnet calculator is helpful to check your mental math.
+	- This is my preferable range!
+- create a new Subnet in the VPC
+	-
 	- Be sure to assign the correct VPC to the Subnet 
 	- The subnet can be from the size of the VPC at /24 up to /28
-	- I prefer Subnets with:
-		- CIDR block of 10.1.1.0/27, Range 10.1.1.1-10.1.1.30 (call it Public) and 
-		- CIDR block of 10.1.1.32/27, Range 10.1.1.33-10.1.1.63 (call if Private)
- - set your Subnet to "Enable auto-assign Public IP"
+	- I will use:
+		- Public: CIDR block of 10.10.10.0/27, Range 10.10.10.1-10.10.10.30
+		- CIDR block of 10.10.10.32/27, Range 10.10.10.33-10.10.10.63
+
+![](https://d1.awsstatic.com/aws-answers/answers-images/public-private-vpc.48799e18e58d0ab73e1c3adb1f08303e5c334c86.png)
+
+
+- set your Subnet to "Enable auto-assign Public IP"
  - create a Security Group for your VPC
  - create inbound rules such as: HTTP (80), HTTPS (443), SSH (22)
 
