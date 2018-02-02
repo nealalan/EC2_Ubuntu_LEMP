@@ -23,7 +23,6 @@ What I won't go over:
 - You will want to have an understanding of getting around the folder structure.
 - PASSWORD MANAGER!!!! If you're not using a password manager, you might not be ready for cloud technology. Here's a good article on [Consumer Reports: Everything You Need to Know About Password Managers](https://www.consumerreports.org/digital-security/everything-you-need-to-know-about-password-managers/)
 - I use [LastPass](https://www.lastpass.com/) and have been for years. I think it's the best and it lets you put in all sorts of things, including scanned vehicle titles as a photo or scan. 
-- Domain names registered with GoDaddy or other registrar services. It's easy to do and will save you a few dollars maybe. You just have to setup the nameserver (NS) records on the registrar site to point to Amazon. If you search "setup godaddy point to aws" you will find instructions.
 
 ## AWS account
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/AWSfreetier.png)
@@ -32,6 +31,7 @@ What I won't go over:
 - Pay attention to [BILLING](https://console.aws.amazon.com/billing/home?region=no-region#/bills) and [cost explorer](https://console.aws.amazon.com/billing/home?region=no-region#/). They will show you what is going to potentially run you charges. Don't panic. Once you remove it, the charges may go away. 
 
 ## Identity and Access Management (IAM) & Account Security
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/iam.png)
 - When you have your account created, you're going to come out with a number of pieces of data. Stored these in your password manager! This is for your root account. It is recommended you setup Multi-factor Authentication for your root account.
 	- AWS Console address: https://<account-id-number>.signin.aws.amazon.com/console
 	- Username & Password
@@ -40,6 +40,20 @@ What I won't go over:
 	- Secret Access Key
 - [IAM Dashboard](https://console.aws.amazon.com/iam) will give you security status recomendations.
 	- The important recommendation is to create a new Administrator user that will actually be you. You shouldn't be doing everything as root.
+
+## Pick Your Domain Name
+ - Domain names registered with GoDaddy or other registrar services. 
+ 	- Easy to do. 
+	- Can save you a few dollars. If you search "setup godaddy point to aws" you will find instructions.
+	- You have to setup the nameserver (NS) records on the registrar site to point to Amazon. 
+ - For AWS Route 53, Go to "Registered domains" and click "Register domain"
+
+## Create a Hosted Zone in Route 53
+- Go to "Hosted Zones" and click "Create Hosted Zone"
+	- Enter your domain name: neonaluminum.com
+	- Click Create!
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/nsrecords.png)
+- You now have your Start of Authority (SOA) and NameServer (NS) records. The NS records will be entered under the domain as the name servers to look for the DNS records.
 
 ## IAM Access to for DNS Record Updates
 - 
@@ -75,8 +89,8 @@ What I won't go over:
 ```
 
 
-## Create our domain name
- - register domain name via Route53 and create a new hosted zone
+
+## VPC
  - create a new VPC using [AWS best practices](https://aws.amazon.com/answers/networking/aws-single-vpc-design/)
 	- You will likely only need a handfull of IP addresses. 
 	- I prefer a Network such as 10.1.1.0/24, Netmask 255.255.255.0, Range 10.1.1.1-10.1.1.254
