@@ -134,8 +134,49 @@ What I won't go over:
 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ACLrules.png)
 
-## EC2
- - create a new Ubuntu EC2 instance
+## EC2: Network & Security: Key Pairs
+- This is not the same as the key that was created when you created the AWS account. This is a seperate key that will be used to connect to your EC2 instances via SSH.
+- Create key pair and name it something more specific than "key".
+- Creating the key now will have you automatically download it and allow you to assign it to an instance later. If you wait and let the key creation happen at the time you create an EC2 instance, and you don't manage to save the key, you will have to kill and create a new EC2 instance. It's just easier to create the key pair now and download your .pem file.
+- Store your .pem file in your home/ folder or ~/.ssh/ folder
+
+## LAUNCH INSTANCE!
+- Please don't jump through this. Go through each screen by clicking "Next" and not "Lanuch"
+- From the EC2 Dashboard, "Launch Instance" 
+- Step 1: Choose an Amazon Machine Image (AMI)
+	- You'll want to scroll down to "Ubuntu Server" and make sure it says "Free tier eligible"
+	- Select
+- Step 2: Choose an Instance Type
+	- "Free tier eligible"
+	- "Next: Configure Instance Details"
+- Step 3: Configure Instance Details
+	- Purchasing Option: You're in the free tier, no need to check this. 
+	- Network: Select the VPC you created
+	- Subnet: Select the Subnet you created
+	- Auto-assign Public IP: This should be Enabled by Subnet default
+	- Likely don't change anything else unless you want charges.
+	- Network interfaces: Allow a new network interface to be created for the subnet
+	- Next: Add Storage
+- Step 4: Add Storage
+	- Next: Add Tags
+- Step 5: Add Tags
+	- Add Tag, Key = "Name", Value = "Neals Web Server"
+	- Next: Configure Security Group
+- Step 6: Configure Security Group
+	- Security Group Name: "Neals Public Subnet SG"
+	- Since we created rules in the ACL earlier, those should limit traffic.
+	- One Rule: Type = All Traffic, Source = Custom 0.0.0.0/0
+	- Review and Launch
+- Step 7: Review Instance Launch
+	- Launch
+	- Select "Choose an existing key pair" and select the key pair you created earlier.
+- It'll take a few minutes for the server to get up and running. You now have an Ubuntu server running in a Virtual Private Cloud, within a Public Subnet controlled by an ACL that only lets in SSH and HTTPS traffic.
+
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ec2instanceline.png)
+- If you go back to EC2 Instance screen and select your running instance, you can see your IPv4 Public IP address. This is what you can use to connect to your server.
+
+## Test out the connection
+- Command line: ssh -i ~/.ssh/neals_web_server.pem ubuntu@<ip-address>
 
 ## Certbot
 - download certbot
