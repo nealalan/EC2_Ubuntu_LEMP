@@ -52,6 +52,7 @@ What I won't go over:
 - Go to "Hosted Zones" and click "Create Hosted Zone"
 	- Enter your domain name: neonaluminum.com
 	- Click Create!
+
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/nsrecords.png)
 - You now have your Start of Authority (SOA) and NameServer (NS) records. The NS records will be entered under the domain as the name servers to look for the DNS records.
 
