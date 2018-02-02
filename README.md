@@ -104,8 +104,8 @@ What I won't go over:
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/accesskey.png)
 
 ## Virtual Private Cloud (VPC) Dashboard
- - A VPC is an isolated portion of the AWS cloud populated by AWS objects, such as Amazon EC2 instances. 
- - You can create an EC2 instance and it will automatically create your VPC, Subnets, Security Groups, etc. However you may miss things, run into issues and definitely won't understand how everything interacts.
+- A VPC is an isolated portion of the AWS cloud populated by AWS objects, such as Amazon EC2 instances. 
+- You can create an EC2 instance and it will automatically create your VPC, Subnets, Security Groups, etc. However you may miss things, run into issues and definitely won't understand how everything interacts.
 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/cidrcalc.png)
 - Create a new VPC 
@@ -114,9 +114,9 @@ What I won't go over:
 	- [IPv4 CIDR block](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks): This must be in a [private network](https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces) range. 10.10.0.0/24 will give us enough address space to allow for a few public and private subnets if needed and plenty of IP address ranges.
 	- A subnet calculator is helpful to check your mental math.
 	- This is my preferable range!
-- create a new Subnet in the VPC
-	-
-	- Be sure to assign the correct VPC to the Subnet 
+
+## Public Subnet
+- Be sure to assign the correct VPC to the Subnet 
 	- The subnet can be from the size of the VPC at /24 up to /28
 	- I will use:
 		- Public: CIDR block of 10.10.10.0/27, Range 10.10.10.1-10.10.10.30
