@@ -117,28 +117,40 @@ What I won't go over:
 
 ## Public Subnet
 - Be sure to assign the correct VPC to the Subnet 
-	- The subnet can be from the size of the VPC at /24 up to /28
-	- I will use:
-		- Public: CIDR block of 10.10.10.0/27, Range 10.10.10.1-10.10.10.30
-		- CIDR block of 10.10.10.32/27, Range 10.10.10.33-10.10.10.63
+	- The subnet can be up to the size of the VPC at /24 or smaller at /27
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/publicsubnet.png)
+- Click on "Subnet Action" and "Modify auto-assign IP Settings" 
+	- Check "Enable auto-assign Public IP" then check 
 
-![](https://d1.awsstatic.com/aws-answers/answers-images/public-private-vpc.48799e18e58d0ab73e1c3adb1f08303e5c334c86.png)
+## VPC: Security: Network Access Control Lists (ACLs)
+- See [VPC ACLs documentation](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html) for full explanation. Here's Amazons brief explanation:
+	- A network access control list (ACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC. For more information about the differences between security groups and network ACLs, see [Comparison of Security Groups and Network ACLs](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Security.html#VPC_Security_Comparison).
+	- There are many different ways to configure security for your instance - Network ACLs, Security Groups, IPTables within the instance, making a subnet private - as you can see in this diagram:
 
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/security-diagram.png)
 
-- set your Subnet to "Enable auto-assign Public IP"
- - create a Security Group for your VPC
- - create inbound rules such as: HTTP (80), HTTPS (443), SSH (22)
+- Change the Name of your ACL
+- create inbound rules such as: HTTPS (443), SSH (22)
 
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ACLrules.png)
+
+## EC2
  - create a new Ubuntu EC2 instance
- - download certbot
 
+## Certbot
+- download certbot
+
+## NGINX Configuration
  - configure nginx.conf files to registered domain
  	- nealalan/EC2_Ubuntu_LEMP/[nginx.servers.conf.txt](./nginx.servers.conf.txt)
  - create a link in your home folder to get to 
 
+## Auto Update Route 53
  - setup a bash script to automatically run upon instance load to update the DNS record to the correct public IP address
 	- nealalan/[update_route53](https://github.com/nealalan/update_route53)
 	- This will allow you to ssh into your instance using the domain name instead of the newly assigned public IP address
 
 
  - To be continued...
+
+[edit](https://github.com/nealalan/EC2_Ubuntu_LEMP/edit/master/README.md)
