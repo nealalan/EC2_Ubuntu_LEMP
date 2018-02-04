@@ -202,62 +202,6 @@ ubuntu@ip-10-10-10-13:~$ sudo apt -y update; sudo apt -y upgrade; sudo apt insta
 # for this change to show, it'll take a reboot
 $ sudo nano /etc/hostname
 ```
-## Create our Website Certificates Encryption Key
-- I will be creating and configuring this server for multiple websites, so I will create everything for both at the same time. Since I own both, I only need 1. But, if I had multiple clients, I'd have to take a different approach to separate them out.
-```bash
-# CREATE FOLDERS FOR WEBSITE CERTS
-$sudo mkdir /etc/ssl/private
-# if you receive "mkdir: cannot create directory ‘/etc/ssl/private’: File exists" then you're good
-# if you didn't and the directory was created, run:
-$ sudo chmod 700 /etc/ssl/private
-
-# Make a Folder for each site
-$ sudo mkdir neonaluminum.com nealalan.com
-# Make a Couple Directories You Will Need
-$ sudo mkdir crl newcerts
-```
-
-- Create an OPENSSL configuration file for each site
-```bash
-# COPY EXISTING INTO YOUR FOLDERS
-$ cd /etc/ssl
-$ sudo cp openssl.cnf neal-openssl.cnf
-$ nano neal-openssl.cnf
-
-```
-- Edit the openssl.cnf file to contain the folder you will have the certs, in our case /etc/ssl/
-
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf1.png)
-- Also, it will make life easier if you change some of the default values to what pertains to you
-
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf2.png)
-- Create a ROOT Key. It will ask for a password. This is an additional level of protection for use of the key! Use a strong password and write it down... in your password manager.
-```bash
-# CREATE THE ROOT KEY IN /etc/ssl/private/cakey.pem
-$ cd /etc/ssl
-$ sudo openssl genrsa -aes256 -out private/cakey.pem 4096
-$ sudo chmod 400 private/cakey.pem 
-```
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/rootkey.png)
-
-- Now with the root certificate:
-```bash
-# CREATE THE ROOT CERTIFICATE /etc/ssl/certs/cacert.pem
-$ sudo openssl req -config neal-openssl.cnf -key private/cakey.pem -new -x509 -days 7300 -sha256 -extensions v3_ca -out certs/cacert.pem
-$ sudo chmod 444 certs/cacert.pem
-```
-- You should see something like below. Be very consistent with what you enter. This is the publically facing information about your secure web server.
-
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/certreq.png)
-
-```bash
-# VERIFY THE ROOT CERTIFICATE
-$ openssl x509 -noout -text -in certs/cacert.pem
-```
-- You should see something like this.
-
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/certcheck.png)
-
 
 ## Install Certbot
 - Install Certbot on your instance
@@ -266,6 +210,7 @@ $ sudo add-apt-repository ppa:certbot/certbot
 $ sudo apt -y update; sudo apt -y upgrade
 $ sudo apt -y install python-certbot-nginx
 ```
+
 ## Configure NGINX webserver
 ```bash
 # MAKE THE HTML FOLDER FOR THE SERVERS
