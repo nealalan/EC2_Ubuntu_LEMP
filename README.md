@@ -107,15 +107,16 @@ What I won't go over:
 ## Virtual Private Cloud (VPC)
 - A VPC is an isolated portion of the AWS cloud populated by AWS objects, such as Amazon EC2 instances. 
 - You can read here about using [AWS best practices](https://aws.amazon.com/answers/networking/aws-single-vpc-design/)
-- Later, when we create a server as an EC2 instance, it will automatically create your:
-	- VPC, 
-	- Route Table,
-	- Internet Gateway,
-	- Network ACL,
-	- Security Group, 
-	- Public Subnet, 
-	- Network Interface
-- This is a lot to digest, but it's important to understand what is being created and how everything relates.
+- Some things will need to be created in order to launch our instance:
+	- VPC : I recommend using the [Start VPC Wizzard](https://us-east-2.console.aws.amazon.com/vpc/home?region=us-east-2#), this will create a lot of what you need!
+		- The VPC CIDR Address is somewhat important. Read my next section.
+		- Route Table,
+		- Internet Gateway,
+		- Network ACL,
+		- Security Group, 
+		- Public Subnet, 
+		- Network Interface
+- This is a lot to digest, but it's important to understand what is being created and how everything relates. 
 
 ## VPC CIDR Address
 - The IP addresses used within your cloud is part of a dedicated range of IP addresses. Whenever you connect to a WIFI connection, you'll likely have an IP address that begins with 192.168 or 172. These are ranges in [private network](https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces) ranges.
@@ -149,7 +150,8 @@ What I won't go over:
 
 ## LAUNCH INSTANCE!
 - Please don't jump through this. Go through each screen by clicking "Next" and not "Lanuch"
-- From the EC2 Dashboard, "Launch Instance" 
+- From the [EC2 Dashboard](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2), "Launch Instance" 
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ubuntuami.png)
 - Step 1: Choose an Amazon Machine Image (AMI)
 	- You'll want to scroll down to "Ubuntu Server" and make sure it says "Free tier eligible"
 	- Select
@@ -180,10 +182,16 @@ What I won't go over:
 - It'll take a few minutes for the server to get up and running. You now have an Ubuntu server running in a Virtual Private Cloud, within a Public Subnet controlled by an ACL that only lets in SSH and HTTPS traffic.
 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ec2instanceline.png)
-- If you go back to EC2 Instance screen and select your running instance, you can see your IPv4 Public IP address. This is what you can use to connect to your server.
+- Go back to [EC2 Instance](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#Instances:sort=desc:publicIp) dashboard and select your running instance, you can see your IPv4 Public IP address. This is what you can use to connect to your server.
+- Click on "Actions: Instant State" for the options to Start and Stop your instances. 
 
-## Test out the connection
+## CONNECT TO YOUR INSTANCE
 - Command line: ssh -i ~/.ssh/neals_web_server.pem ubuntu@<ip-address>
+- Amazon also has a way to connect via the web browser through a Java plugin.
+```bash
+# The first thing you want to do is ensure you're upgraded fully
+ubuntu@ip-10-10-10-13:~$ sudo apt -y update; sudo apt -y upgrade
+```
 
 ## Certbot
 - download certbot
