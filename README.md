@@ -282,11 +282,12 @@ $ echo "nealalan.com" > ~/nealalan.com/html/index.html
 $ echo "neonaluminum.com" > ~/neonaluminum.com/html/index.html
 # CREATE LINE TO SITES-AVAILABLE NGINX CONFIG FILES
 $ ln -s /etc/nginx/sites-available /home/ubuntu/sites-available
+$ ln -s /etc/nginx/sites-enabled /home/ubuntu/sites-enabled
 # CREATE NGINX CONFIG FILES
 $ cd sites-available
 $ sudo nano nealalan.com
 ```
-- This will be our starting point. Update for your domain name(s) creating one for each.
+- This will be our starting point. Update for your domain name(s) creating one for each. You can find a copy of this on github at nealalan/EC2_Ubuntu_LEMP/[nginx.servers.conf.txt](./nginx.servers.conf.txt)
 ```bash
 server {
 	listen 80;
@@ -333,11 +334,49 @@ server {
 	index index.html;
 }
 ```
+- Now we need to enable our server blocks and restart / start NGINX
+```bash
+# CREATE LINKS FROM SITES-AVAILABLE TO SITES-ENABLED
+$ sudo ln -s /etc/nginx/sites-available/nealalan.com /etc/nginx/sites-enabled/
+$ sudo ln -s /etc/nginx/sites-available/neonaluminum.com /etc/nginx/sites-enabled/
+# VERIFY NGINX CONFIGURATION
+$ look for feedback to match the screenshot
+$ sudo nginx -t
+$ sudo systemctl restart nginx
+```
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/nginx-t.png)
+## Update you DNS A Record
+- You will need the IP address of your server. You can look in the EC2 Dashboard or simply use
+```bash
+$ curl ifconfig.co
+```
+- Go to Route 53, select your hosted zone and create a new record set of Type A and value of your server IP address.
+- Once the DNS update has cascaded out, you should be able to see the IP address assigned to the domain name.
 
-## NGINX Configuration
- - configure nginx.conf files to registered domain
- 	- nealalan/EC2_Ubuntu_LEMP/[nginx.servers.conf.txt](./nginx.servers.conf.txt)
- - create a link in your home folder to get to 
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/diga.png)
+
+## Run CertBot!
+- Many docs will say to use a different method. At the time I wrote this, a security incident had just happened with certbot, so I had to use this method.
+```bash
+$ sudo certbot --authenticator standalone --installer nginx -d nealalan.com --pre-hook 'sudo service nginx stop' --post-hook 'sudo service nginx start'
+```
+- If you look in your ~/sites-available/nealalan.com file, you should now see lines showing the ssl keys
+- It's a good idea to test out the automatic renewal of yoru certificates using Certbox
+```bash
+$ sudo certbot renew --dry-run
+```
+- Now for the next web server
+```bash
+# Note: This didn't work for me because the stop didn't work. I ended up using a 
+$ ps aux
+# to get the PID of nginx and then I ran
+$ sudo kill <PID>
+# to get nginx to stop. Then the certbot ran fun
+$ sudo certbot --authenticator standalone --installer nginx -d neonaluminum.com --pre-hook 'sudo service nginx stop' --post-hook 'sudo service nginx start'
+```
+- Amazingly, I can now browse to both https://nealalan.com and https://neonaluminum.com and the test sites come up!
+
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/sites-as-https.png)
 
 ## Auto Update Route 53
  - setup a bash script to automatically run upon instance load to update the DNS record to the correct public IP address
@@ -346,5 +385,11 @@ server {
 
 
  - To be continued...
+
+```bash
+$ sudo apt install npm
+$ sudo npm install github-api
+
+```
 
 [edit](https://github.com/nealalan/EC2_Ubuntu_LEMP/edit/master/README.md)
