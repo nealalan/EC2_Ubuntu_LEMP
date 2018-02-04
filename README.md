@@ -196,7 +196,12 @@ $ ssh -i ~/.ssh/neals_web_server.pem ubuntu@<ip-address>
 # The second is install NGINX webserver
 ubuntu@ip-10-10-10-13:~$ sudo apt -y update; sudo apt -y upgrade; sudo apt install -y nginx
 ```
-
+- Change the host name
+```bash
+# OVERWRITE WHAT'S HERE WITH YOUR DOMAIN NAME
+# for this change to show, it'll take a reboot
+$ sudo nano /etc/hostname
+```
 ## Create our Website Certificates Encryption Key
 - I will be creating and configuring this server for multiple websites, so I will create everything for both at the same time. Since I own both, I only need 1. But, if I had multiple clients, I'd have to take a different approach to separate them out.
 ```bash
@@ -221,8 +226,10 @@ $ nano neal-openssl.cnf
 
 ```
 - Edit the openssl.cnf file to contain the folder you will have the certs, in our case /etc/ssl/
+
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf1.png)
 - Also, it will make life easier if you change some of the default values to what pertains to you
+
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf2.png)
 - Create a ROOT Key. It will ask for a password. This is an additional level of protection for use of the key! Use a strong password and write it down... in your password manager.
 ```bash
@@ -240,6 +247,7 @@ $ sudo openssl req -config neal-openssl.cnf -key private/cakey.pem -new -x509 -d
 $ sudo chmod 444 certs/cacert.pem
 ```
 - You should see something like below. Be very consistent with what you enter. This is the publically facing information about your secure web server.
+
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/certreq.png)
 
 ```bash
@@ -247,11 +255,84 @@ $ sudo chmod 444 certs/cacert.pem
 $ openssl x509 -noout -text -in certs/cacert.pem
 ```
 - You should see something like this.
+
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/certcheck.png)
 
 
-## Certbot
-- download certbot
+## Install Certbot
+- Install Certbot on your instance
+```bash
+$ sudo add-apt-repository ppa:certbot/certbot
+$ sudo apt -y update; sudo apt -y upgrade
+$ sudo apt -y install python-certbot-nginx
+```
+## Configure NGINX webserver
+```bash
+# MAKE THE HTML FOLDER FOR THE SERVERS
+$ sudo mkdir -p /var/www/nealalan.com/html
+$ sudo mkdir -p /var/www/neonaluminum.com/html
+# CREATE LINKS IN THE HOME FOLDER TO THE WEBSITES
+$ ln -s /var/www/nealalan.com /home/ubuntu/nealalan.com
+$ ln -s /var/www/neonaluminum.com /home/ubuntu/neonaluminum.com
+# CHANGE OWNERSHIP OF THE WEBSITE HTML FOLDERS
+$ sudo chown -R $USER:$USER /var/www/nealalan.com/html
+$ sudo chown -R $USER:$USER /var/www/neonaluminum.com/html
+# CREATE GENERIC HTML PAGES
+$ echo "nealalan.com" > ~/nealalan.com/html/index.html
+$ echo "neonaluminum.com" > ~/neonaluminum.com/html/index.html
+# CREATE LINE TO SITES-AVAILABLE NGINX CONFIG FILES
+$ ln -s /etc/nginx/sites-available /home/ubuntu/sites-available
+# CREATE NGINX CONFIG FILES
+$ cd sites-available
+$ sudo nano nealalan.com
+```
+- This will be our starting point. Update for your domain name(s) creating one for each.
+```bash
+server {
+	listen 80;
+	listen [::]:80;
+	server_name nealalan.com www.nealalan.com;
+	# configure a new HTTP (80) server block to redirect all http requests to your webserver to https
+	return 301 https://nealalan.com$request_uri;
+}
+server {
+	listen 443 ssl; # managed by Certbot
+	server_name nealalan.com www.nealalan.com;
+	# Where are the root key and root certificate located?
+
+	#
+	# Secure cipher suites and TLS protocols only within the 443 SSL server block?
+	# ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	# ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:ECDHE-RSA-AES128-GCM-SHA256:AES256+EECDH:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+	#
+	#  HTTP Strict Transport Security (HSTS) within the 443 SSL server block.
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	#
+	# Server_tokens off
+	server_tokens off;
+	#
+	# Disable content-type sniffing on some browsers
+	add_header X-Content-Type-Options nosniff;
+	#
+	# Set the X-Frame-Options header to same origin
+	add_header X-Frame-Options SAMEORIGIN;
+	#
+	# enable cross-site scripting filter built in, See: https://www.owasp.org/index.php/List_of_useful_HTTP_headers
+	add_header X-XSS-Protection "1; mode=block";
+	#
+	# disable sites with potentially harmful code, See: https://content-security-policy.com/
+	add_header Content-Security-Policy "default-src 'self'; script-src 'self' ajax.googleapis.com; object-src 'self';";
+	#
+	# referrer policy
+	add_header Referrer-Policy "no-referrer-when-downgrade";
+	#
+	# certificate transparency, See: https://thecustomizewindows.com/2017/04/new-security-header-expect-ct-header-nginx-directive/
+	add_header Expect-CT max-age=3600;
+	# HTML folder
+	root /var/www/nealalan.com/html;
+	index index.html;
+}
+```
 
 ## NGINX Configuration
  - configure nginx.conf files to registered domain
