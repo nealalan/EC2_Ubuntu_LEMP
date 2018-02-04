@@ -31,13 +31,14 @@ What I won't go over:
 - Pay attention to [BILLING](https://console.aws.amazon.com/billing/home?region=no-region#/bills) and [cost explorer](https://console.aws.amazon.com/billing/home?region=no-region#/). They will show you what is going to potentially run you charges. Don't panic. Once you remove it, the charges may go away. 
 
 ## Identity and Access Management (IAM) & Account Security
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/iam.png)
 - When you have your account created, you're going to come out with a number of pieces of data. Stored these in your password manager! This is for your root account. It is recommended you setup Multi-factor Authentication for your root account.
 	- AWS Console address: https://<account-id-number>.signin.aws.amazon.com/console
 	- Username & Password
 	- Account ID
 	- Access Key ID
 	- Secret Access Key
+
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/iam.png)
 - [IAM Dashboard](https://console.aws.amazon.com/iam) will give you security status recomendations.
 	- The important recommendation is to create a new Administrator user that will actually be you. You shouldn't be doing everything as root.
 
@@ -103,24 +104,29 @@ What I won't go over:
 	- IMPORTANT! You will not be given an Access Key ID and Secret Access Key. You can NOT retrieve these later. I recommend you click download .csv file and you copy and paste these into a new entry in your password manager.
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/accesskey.png)
 
-## Virtual Private Cloud (VPC) Dashboard
+## Virtual Private Cloud (VPC)
 - A VPC is an isolated portion of the AWS cloud populated by AWS objects, such as Amazon EC2 instances. 
-- You can create an EC2 instance and it will automatically create your VPC, Subnets, Security Groups, etc. However you may miss things, run into issues and definitely won't understand how everything interacts.
+- You can read here about using [AWS best practices](https://aws.amazon.com/answers/networking/aws-single-vpc-design/)
+- Later, when we create a server as an EC2 instance, it will automatically create your:
+	- VPC, 
+	- Route Table,
+	- Internet Gateway,
+	- Network ACL,
+	- Security Group, 
+	- Public Subnet, 
+	- Network Interface
+- This is a lot to digest, but it's important to understand what is being created and how everything relates.
+
+## VPC CIDR Address
+- The IP addresses used within your cloud is part of a dedicated range of IP addresses. Whenever you connect to a WIFI connection, you'll likely have an IP address that begins with 192.168 or 172. These are ranges in [private network](https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces) ranges.
 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/cidrcalc.png)
-- Create a new VPC 
- 	- You can read here about using [AWS best practices](https://aws.amazon.com/answers/networking/aws-single-vpc-design/)
- 	- Name tag: Neals Cloud
-	- [IPv4 CIDR block](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks): This must be in a [private network](https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces) range. 10.10.0.0/24 will give us enough address space to allow for a few public and private subnets if needed and plenty of IP address ranges.
-	- A subnet calculator is helpful to check your mental math.
-	- This is my preferable range!
+- Creating a Cloud we will create an [IPv4 CIDR block](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks) 10.10.10.0/24 will give us address space for a standard small network.
 
-## Public Subnet
-- Be sure to assign the correct VPC to the Subnet 
-	- The subnet can be up to the size of the VPC at /24 or smaller at /27
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/publicsubnet.png)
-- Click on "Subnet Action" and "Modify auto-assign IP Settings" 
-	- Check "Enable auto-assign Public IP" then check 
+## VPC: Public Subnetwork (Subnet)
+- Since the VPC is actually "virtual" we need to create an actual network (even though it's also virtual since it's in the cloud) to place our actual servers (that are also virtual).
+- A [subnet](https://en.wikipedia.org/wiki/Subnetwork) can take up the entire address space of the VPC or you can make many subnets within a VPC to allow for private networks and a higher level of security.
+	- Since my VPC CIDR block is 10.10.10.0/24, I will create create a smaller subnet in the CIDR block of the VPC, set to 10.10.10.0/27.
 
 ## VPC: Security: Network Access Control Lists (ACLs)
 - See [VPC ACLs documentation](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html) for full explanation. Here's Amazons brief explanation:
@@ -129,15 +135,16 @@ What I won't go over:
 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/security-diagram.png)
 
-- Change the Name of your ACL
-- create inbound rules such as: HTTPS (443), SSH (22)
-
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ACLrules.png)
-
 ## EC2: Network & Security: Key Pairs
-- This is not the same as the key that was created when you created the AWS account. This is a seperate key that will be used to connect to your EC2 instances via SSH.
-- Create key pair and name it something more specific than "key".
-- Creating the key now will have you automatically download it and allow you to assign it to an instance later. If you wait and let the key creation happen at the time you create an EC2 instance, and you don't manage to save the key, you will have to kill and create a new EC2 instance. It's just easier to create the key pair now and download your .pem file.
+- This Key Pair is not the same as the key that was created when you created the AWS account!
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ssh_patrick_Lnx_illustration.png)
+- Now, [lets create one](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#KeyPairs:)! (If you have one already, you can upload it also.)
+	- This key file that will be used to connect to your EC2 instances via SSH.
+	- Name it something more specific than "key".
+	- Creating the key now, will have you automatically download it.
+	- You can assign this key to an instance later. 
+	- Note: If you wait and let the key creation happen at the time you create an EC2 instance, you may run into frustrations. 
+	- Note Conclusion: It's just easier to create the key pair now and download your .pem file.
 - Store your .pem file in your home/ folder or ~/.ssh/ folder
 
 ## LAUNCH INSTANCE!
