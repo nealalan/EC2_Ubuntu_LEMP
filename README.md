@@ -189,9 +189,38 @@ What I won't go over:
 - Command line: ssh -i ~/.ssh/neals_web_server.pem ubuntu@<ip-address>
 - Amazon also has a way to connect via the web browser through a Java plugin.
 ```bash
-# The first thing you want to do is ensure you're upgraded fully
-ubuntu@ip-10-10-10-13:~$ sudo apt -y update; sudo apt -y upgrade
+# The first thing you want to do is ensure you're upgraded
+# The second is install NGINX webserver
+ubuntu@ip-10-10-10-13:~$ sudo apt -y update; sudo apt -y upgrade; sudo apt install -y nginx
 ```
+
+## Create our Website Certificates
+- I will be creating and configuring this server for multiple websites, so I will create everything for both at the same time.
+```bash
+# CREATE FOLDERS FOR WEBSITE CERTS
+$sudo mkdir /etc/ssl/private
+# if you receive "mkdir: cannot create directory ‘/etc/ssl/private’: File exists" then you're good
+# if you didn't and the directory was created, run:
+$ sudo chmod 700 /etc/ssl/private
+
+# Make a Folder for each site
+$ sudo mkdir neonaluminum.com nealalan.com
+# Make a Couple Directories You Will Need
+$ sudo mkdir crl newcerts
+```
+
+- Create an OPENSSL configuration file for each site
+```bash
+# COPY EXISTING INTO YOUR FOLDERS
+$ cd /etc/ssl
+$ sudo cp openssl.cnf ./nealalan.com/
+
+```
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf1.png)
+- Edit the openssl.cnf file to contain the folder you will have the certs, in our case /etc/ssl/
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf2.png)
+- Also, it will make life easier if you change some of the default values to what pertains to you
+
 
 ## Certbot
 - download certbot
