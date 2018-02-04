@@ -186,7 +186,10 @@ What I won't go over:
 - Click on "Actions: Instant State" for the options to Start and Stop your instances. 
 
 ## CONNECT TO YOUR INSTANCE
-- Command line: ssh -i ~/.ssh/neals_web_server.pem ubuntu@<ip-address>
+- Command line: 
+```bash
+$ ssh -i ~/.ssh/neals_web_server.pem ubuntu@<ip-address>
+```
 - Amazon also has a way to connect via the web browser through a Java plugin.
 ```bash
 # The first thing you want to do is ensure you're upgraded
@@ -194,8 +197,8 @@ What I won't go over:
 ubuntu@ip-10-10-10-13:~$ sudo apt -y update; sudo apt -y upgrade; sudo apt install -y nginx
 ```
 
-## Create our Website Certificates
-- I will be creating and configuring this server for multiple websites, so I will create everything for both at the same time.
+## Create our Website Certificates Encryption Key
+- I will be creating and configuring this server for multiple websites, so I will create everything for both at the same time. Since I own both, I only need 1. But, if I had multiple clients, I'd have to take a different approach to separate them out.
 ```bash
 # CREATE FOLDERS FOR WEBSITE CERTS
 $sudo mkdir /etc/ssl/private
@@ -213,13 +216,38 @@ $ sudo mkdir crl newcerts
 ```bash
 # COPY EXISTING INTO YOUR FOLDERS
 $ cd /etc/ssl
-$ sudo cp openssl.cnf ./nealalan.com/
+$ sudo cp openssl.cnf neal-openssl.cnf
+$ nano neal-openssl.cnf
 
 ```
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf1.png)
 - Edit the openssl.cnf file to contain the folder you will have the certs, in our case /etc/ssl/
-![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf2.png)
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf1.png)
 - Also, it will make life easier if you change some of the default values to what pertains to you
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/opensslcnf2.png)
+- Create a ROOT Key. It will ask for a password. This is an additional level of protection for use of the key! Use a strong password and write it down... in your password manager.
+```bash
+# CREATE THE ROOT KEY IN /etc/ssl/private/cakey.pem
+$ cd /etc/ssl
+$ sudo openssl genrsa -aes256 -out private/cakey.pem 4096
+$ sudo chmod 400 private/cakey.pem 
+```
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/rootkey.png)
+
+- Now with the root certificate:
+```bash
+# CREATE THE ROOT CERTIFICATE /etc/ssl/certs/cacert.pem
+$ sudo openssl req -config neal-openssl.cnf -key private/cakey.pem -new -x509 -days 7300 -sha256 -extensions v3_ca -out certs/cacert.pem
+$ sudo chmod 444 certs/cacert.pem
+```
+- You should see something like below. Be very consistent with what you enter. This is the publically facing information about your secure web server.
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/certreq.png)
+
+```bash
+# VERIFY THE ROOT CERTIFICATE
+$ openssl x509 -noout -text -in certs/cacert.pem
+```
+- You should see something like this.
+![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/certcheck.png)
 
 
 ## Certbot
