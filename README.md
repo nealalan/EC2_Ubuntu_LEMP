@@ -187,16 +187,19 @@ What I won't go over:
 
 ## CONNECT TO YOUR INSTANCE
 - Command line: 
+
 ```bash
 $ ssh -i ~/.ssh/neals_web_server.pem ubuntu@<ip-address>
 ```
 - Amazon also has a way to connect via the web browser through a Java plugin.
+
 ```bash
 # The first thing you want to do is ensure you're upgraded
 # The second is install NGINX webserver
 ubuntu@ip-10-10-10-13:~$ sudo apt -y update; sudo apt -y upgrade; sudo apt install -y nginx
 ```
 - Change the host name
+
 ```bash
 # OVERWRITE WHAT'S HERE WITH YOUR DOMAIN NAME
 # for this change to show, it'll take a reboot
@@ -205,6 +208,7 @@ $ sudo nano /etc/hostname
 
 ## Install Certbot
 - Install Certbot on your instance
+
 ```bash
 $ sudo add-apt-repository ppa:certbot/certbot
 $ sudo apt -y update; sudo apt -y upgrade
@@ -232,7 +236,9 @@ $ ln -s /etc/nginx/sites-enabled /home/ubuntu/sites-enabled
 $ cd sites-available
 $ sudo nano nealalan.com
 ```
+
 - This will be our starting point. Update for your domain name(s) creating one for each. You can find a copy of this on github at nealalan/EC2_Ubuntu_LEMP/[nginx.servers.conf.txt](./nginx.servers.conf.txt)
+
 ```bash
 server {
 	listen 80;
@@ -280,6 +286,7 @@ server {
 }
 ```
 - Now we need to enable our server blocks and restart / start NGINX
+
 ```bash
 # CREATE LINKS FROM SITES-AVAILABLE TO SITES-ENABLED
 $ sudo ln -s /etc/nginx/sites-available/nealalan.com /etc/nginx/sites-enabled/
@@ -289,9 +296,11 @@ $ look for feedback to match the screenshot
 $ sudo nginx -t
 $ sudo systemctl restart nginx
 ```
+
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/nginx-t.png)
 ## Update you DNS A Record
 - You will need the IP address of your server. You can look in the EC2 Dashboard or simply use
+
 ```bash
 $ curl ifconfig.co
 ```
@@ -302,14 +311,17 @@ $ curl ifconfig.co
 
 ## Run CertBot!
 - Many docs will say to use a different method. At the time I wrote this, a security incident had just happened with certbot, so I had to use this method.
+
 ```bash
 $ sudo certbot --authenticator standalone --installer nginx -d nealalan.com --pre-hook 'sudo service nginx stop' --post-hook 'sudo service nginx start'
 ```
 - If you look in your ~/sites-available/nealalan.com file, you should now see lines showing the ssl keys
 - It's a good idea to test out the automatic renewal of yoru certificates using Certbox
+
 ```bash
 $ sudo certbot renew --dry-run
 ```
+
 - Now for the next web server
 ```bash
 # Note: This didn't work for me because the stop didn't work. I ended up using a 
@@ -323,6 +335,16 @@ $ sudo certbot --authenticator standalone --installer nginx -d neonaluminum.com 
 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/sites-as-https.png)
 
+## Remote Website 
+- I store my source code for websites here on github.
+- Pull down existing website.
+```bash
+# CLONE THE nealalan.com REPO TO THE html/ FOLDER
+# note: the /html must be empty
+$ git clone https://github.com/nealalan/nealalan.com.git ~/nealalan.com/html/
+```
+
+## To be continued...
 ## Auto Update Route 53
 - Now we have our webservers up and running, we need to be able to take our server up and down and for it to recover successful. This means the DNS A records will need to be updated to match the newly assigned static IP addresses.
 - We will accomplish this with a script running BASH code that is initiated as one of the last scripts at startup. We need to make sure networking is up and running before we try to do this, or we won't have a public IP address and won't have a way to send that update to the DNS record.
@@ -337,7 +359,7 @@ $ sudo reboot now
 	- This will allow you to ssh into your instance using the domain name instead of the newly assigned public IP address
 
 
- - To be continued...
+
 
 ```bash
 $ sudo apt install npm
