@@ -324,7 +324,15 @@ $ sudo certbot --authenticator standalone --installer nginx -d neonaluminum.com 
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/sites-as-https.png)
 
 ## Auto Update Route 53
- - setup a bash script to automatically run upon instance load to update the DNS record to the correct public IP address
+- Now we have our webservers up and running, we need to be able to take our server up and down and for it to recover successful. This means the DNS A records will need to be updated to match the newly assigned static IP addresses.
+- We will accomplish this with a script running BASH code that is initiated as one of the last scripts at startup. We need to make sure networking is up and running before we try to do this, or we won't have a public IP address and won't have a way to send that update to the DNS record.
+- First lets go ahead and reboot our server from the command line
+```bash
+$ sudo reboot now
+```
+- You will need to get the new IP address from the [EC2 Dashboard](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2) and update your Route 53 DNS A type records like we did before.
+
+- setup a bash script to automatically run upon instance load to update the DNS record to the correct public IP address
 	- nealalan/[update_route53](https://github.com/nealalan/update_route53)
 	- This will allow you to ssh into your instance using the domain name instead of the newly assigned public IP address
 
