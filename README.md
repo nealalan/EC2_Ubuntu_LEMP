@@ -333,17 +333,69 @@ $ sudo certbot --authenticator standalone --installer nginx -d neonaluminum.com 
 ```
 - Amazingly, I can now browse to both https://nealalan.com and https://neonaluminum.com and the test sites come up!
 
+```bash
+$ sudo reboot now
+```
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/sites-as-https.png)
 
-## Remote Website 
-- I store my source code for websites here on github.
-- Pull down existing website.
+## Install Git & Pull Down A Website
+- I store my source code for websites here on github. To interact with GitHub we need to install a couple of utilities.
+```bash
+# Install JavaScript platform Note Package Manager 
+$ sudo apt install npm
+# Install GITHUB API
+$ sudo npm install github-api
+# Configure 
+$ git config --global user.email "neal@email"
+$ git config --global user.neal "nealalan"
+# Create an SSH key and display it
+$ ssh-keygen -t rsa -C "neal@nemail"
+$ cat ~/.ssh/id_rsa.pub
+```
+- You must now give Github a copy of your public key so it will be able to authorize SSH connections.
+	- [https://github.com/settings/keys](https://github.com/settings/keys)
+	- New SSH key and copy in the SSH key that was printed out. It'll begin with ssh-rsa and end with ubuntu@xxx
+- Now that we have Github installed, we can pull down existing website.
+	- If you don't include the destination folder in the command, the repo will go into the current folder with a new folder called the same as the repo name.
+	- Also, the /html folder must be empty for you to clone into it.
 ```bash
 # CLONE THE nealalan.com REPO TO THE html/ FOLDER
-# note: the /html must be empty
 $ git clone https://github.com/nealalan/nealalan.com.git ~/nealalan.com/html/
 ```
+- If you make some changes, you'll want to be able to push it back. 
+- Because we pulled the repo down using HTTPS (which is convenient because anyone could pull it down and use the code) we will need to change the repo to push back using SSH
+	- Note: If you would like, on github you can create a new repo called test.com and replace nealalan.com with test.com
+```bash
+# CHANGE THE GIT TO SSH ORIGIN
+$ cd ~/nealalan.com/html
+$ git remote set-url origin git@github.com:nealalan/nealalan.com.git
+```
+## GIT PUSH A New Website to a New Repo
+- Something that has annoyed me with GIT CLI is the ability to create a repo from the commandline. You are forced to go to the graphical website and create a new repo unless you add additional utilities. 
+- There is a utility called HUB that is bolted onto GIT.
+	- You will need to install [Go](https://golang.org/) (a language developed by Google).
+	- [How to: Install Go 1.9.1 on Ubuntu 16.04](https://medium.com/@patdhlk/how-to-install-go-1-9-1-on-ubuntu-16-04-ee64c073cd79)
 
+```bash
+# DOWNLOAD & INSTALL GO
+$ cd
+$ sudo curl -O https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
+$ sudo tar -xvf go1.9.1.linux-amd64.tar.gz
+$ sudo mv go /usr/local
+$ rm go1.9.1.linux-amd64.tar.gz
+$ sudo nano ~/.profile
+# ADD THE FOLLOWING LINE TO THE END OF .profile
+#	export PATH=$PATH:/usr/local/go/bin
+# REFRESH THE PROFILE
+$ source ~/.profile
+$ go 
+
+# DOWNLOAD & INSTALL HUB
+$ git clone https://github.com/github/hub.git && cd hub
+$ script/build -o ~/bin/hub
+
+$ source ~/.profile
+```
 ## To be continued...
 ## Auto Update Route 53
 - Now we have our webservers up and running, we need to be able to take our server up and down and for it to recover successful. This means the DNS A records will need to be updated to match the newly assigned static IP addresses.
@@ -361,10 +413,5 @@ $ sudo reboot now
 
 
 
-```bash
-$ sudo apt install npm
-$ sudo npm install github-api
-
-```
 
 [edit](https://github.com/nealalan/EC2_Ubuntu_LEMP/edit/master/README.md)
