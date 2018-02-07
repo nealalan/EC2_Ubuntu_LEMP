@@ -313,10 +313,10 @@ $ curl ifconfig.co
 - Many docs will say to use a different method. At the time I wrote this, a security incident had just happened with certbot, so I had to use this method.
 
 ```bash
-$ sudo certbot --authenticator standalone --installer nginx -d nealalan.com --pre-hook 'sudo service nginx stop' --post-hook 'sudo service nginx start'
+$ sudo certbot --authenticator standalone --installer nginx -d nealalan.com -d www.nealalan.com --pre-hook 'sudo service nginx stop' --post-hook 'sudo service nginx start'
 ```
 - If you look in your ~/sites-available/nealalan.com file, you should now see lines showing the ssl keys
-- It's a good idea to test out the automatic renewal of yoru certificates using Certbox
+- It's a good idea to test out the automatic renewal of yout certificates using Certbot
 
 ```bash
 $ sudo certbot renew --dry-run
@@ -396,6 +396,25 @@ $ script/build -o ~/bin/hub
 
 $ source ~/.profile
 ```
+## Security: Where we are now?
+- CIA Triad
+	- Confidentiality - For purposes of a publically facing webserver keep what's confidential internal and publically available marketing external. Setting up this webserver maintains confidentiality... which leads to the next vocab work...
+	- Integrity - Assuming controls are in place to prevent unauthorized individuals from tampering with or adding to the information on the server, the server is setup to maintain integrity. (I.e. Since I am the only one with access to this server, I know I won't store my tax information here.)
+	- Availability - Hosting in the cloud. As of Feb 2018, AWS was the top IaaS provider per [Stackify: Top IaaS Providers: 42 Leading Infrastructure-as-a-Service Providers to Streamline Your Operations](https://stackify.com/top-iaas-providers/).
+
+- Lock down SSH access.
+	- I updated my VPC ACL list so SSH is only allowed via a few IP addresses. I turn these on as needed.
+	- You can see the DENY for specific IP addresses. I want to turn these on and off because others who use the same VPN provider I do would also have SSH access.
+	- ACLs require CIDR address format. Since everything accessing my box will likely be an internet IP, I'll likely only ever have /32 addresses listed.
+	![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/ACLsshlist.png)
+- Basic Testing
+	- First thing I'll run is an nmap command
+	```bash
+	# USE CAUTIOUSLY AGAINST OTHERS
+	$ sudo nmap -A -T5 -r -p 1-9999 nealalan.com
+	```
+	- Check the HTTP security headers at [https://securityheaders.io](https://securityheaders.io)
+	- SSL Test at [https://www.ssllabs.com/ssltest](https://www.ssllabs.com/ssltest)
 ## To be continued...
 ## Auto Update Route 53
 - Now we have our webservers up and running, we need to be able to take our server up and down and for it to recover successful. This means the DNS A records will need to be updated to match the newly assigned static IP addresses.
