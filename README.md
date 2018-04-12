@@ -415,7 +415,15 @@ $ source ~/.profile
 	```
 	- Check the HTTP security headers at [https://securityheaders.io](https://securityheaders.io)
 	- SSL Test at [https://www.ssllabs.com/ssltest](https://www.ssllabs.com/ssltest)
+
+## FTP access and users
+- I installed vsftpd using some current instructions on [digitalocean](https://www.digitalocean.com/community/tutorials/how-to-set-up-vsftpd-for-a-user-s-directory-on-ubuntu-16-04). Installation of FTP will allow me to easily transfer images and html to and from the webserver.
+- Since I'm running two sites, I setup the following:
+	- User: nealalan with access to nealalan.com and a symbolic link to the nealalan.com/html/ folder 
+	- User: neonaluminum with access to neonaluminum.com and a symbolic link to the neonaluminum.com/html folders
+
 ## To be continued...
+
 ## Auto Update Route 53
 - Now we have our webservers up and running, we need to be able to take our server up and down and for it to recover successful. This means the DNS A records will need to be updated to match the newly assigned static IP addresses.
 - We will accomplish this with a script running BASH code that is initiated as one of the last scripts at startup. We need to make sure networking is up and running before we try to do this, or we won't have a public IP address and won't have a way to send that update to the DNS record.
