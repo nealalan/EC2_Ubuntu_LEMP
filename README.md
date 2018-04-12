@@ -421,6 +421,14 @@ $ source ~/.profile
 - Since I'm running two sites, I setup the following:
 	- User: nealalan with access to nealalan.com and a symbolic link to the nealalan.com/html/ folder 
 	- User: neonaluminum with access to neonaluminum.com and a symbolic link to the neonaluminum.com/html folders
+- The fireware rules I applied are in the vsftpd instructrions as follows:
+```bash
+$ sudo ufw allow 20/tcp
+$ sudo ufw allow 21/tcp
+$ sudo ufw allow 990/tcp
+$ sudo ufw allow 40000:50000/tcp
+$ sudo ufw status
+```
 
 ## To be continued...
 
