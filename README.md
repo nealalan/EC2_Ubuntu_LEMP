@@ -433,6 +433,9 @@ $ sudo ufw status
 ## To be continued...
 
 ## Auto Update Route 53
+NOTE: This is no longer needed, since Amazon is nice enough to include a free static IP address. You can set this up from the  AWS Console: EC2 Dashboard: Elastic IPs.
+
+
 - Now we have our webservers up and running, we need to be able to take our server up and down and for it to recover successful. This means the DNS A records will need to be updated to match the newly assigned static IP addresses.
 - We will accomplish this with a script running BASH code that is initiated as one of the last scripts at startup. We need to make sure networking is up and running before we try to do this, or we won't have a public IP address and won't have a way to send that update to the DNS record.
 - First lets go ahead and reboot our server from the command line
