@@ -57,7 +57,7 @@ What I won't go over:
 ![](https://raw.githubusercontent.com/nealalan/EC2_Ubuntu_LEMP/master/nsrecords.png)
 - You now have your Start of Authority (SOA) and NameServer (NS) records. The NS records will be entered under the domain as the name servers to look for the DNS records.
 
-## IAM Access for DNS Record Updates
+## XXXXX Strike this section because an Elastic IP works better - IAM Access for DNS Record Updates
 - In the future we will need to update our DNS records for the domain name. 
 	- Using a dynamic IP addresses costs extra money, 
 	- Using a static IP address and updating a DNS record is free. 
